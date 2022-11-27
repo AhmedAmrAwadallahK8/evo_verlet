@@ -6,19 +6,24 @@ class Organism{
   float food_consumed;
   float displacement;
   float seperation;
+  float stiffness;
   //int size;
   color col;
   
   static final int minSize = 2;
   static final int maxSize = 20;
+  static final float minStiff = 0.00001;
+  static final float maxStiff = 0.001;
+  static final float stiffIncrease = 0.001;
   
   
   Organism(float x, float y){
     col = color(random(255), random(255), random(255));
+    stiffness = random(minStiff, maxStiff);
     cells = new ArrayList<Cell>();
     
     /* Possible color bug where the color is null*/
-    head = new Cell(x, y);
+    head = new Cell(x, y, stiffness);
     head.setColor(col);
     tail = new Cell(head);
     tail.setColor(col);
@@ -29,12 +34,28 @@ class Organism{
     int extendCount = int(random(18));
     extendNTimes(extendCount);
     
+    
+    
+  }
+  
+  Organism(float x, float y, float _stiffness){
+    col = color(random(255), random(255), random(255));
+    stiffness = _stiffness;
+    cells = new ArrayList<Cell>();
+    head = new Cell(x, y, stiffness);
+    head.setColor(col);
+    tail = new Cell(head);
+    tail.setColor(col);
+    cells.add(head);
+    cells.add(tail);
+    setColors();
   }
   
   Organism(float x, float y, boolean isChild){
     col = color(random(255), random(255), random(255));
     cells = new ArrayList<Cell>();
     head = new Cell(x, y);
+    head.setColor(col);
     tail = new Cell(head);
     cells.add(head);
     cells.add(tail);
@@ -56,15 +77,15 @@ class Organism{
   
   void run() {
     int counter = 0;
-    //for(Cell c: cells){
-    //  if(counter % 4 == 0){
-    //    c.pushSelf();
-    //  }
-    //  counter++;
-    //}
+    for(Cell c: cells){
+      if(counter % 3 == 0){
+        c.pushSelf();
+      }
+      counter++;
+    }
     
-    head.pushSelf();
-    tail.pushSelf();
+    //head.pushSelf();
+    //tail.pushSelf();
     for(Cell c: cells){
       c.run();
     }
@@ -137,8 +158,16 @@ class Organism{
   }*/
   
   Organism reproduceWith(Organism partner){
-    //Organism child = new Organism(random(width), height/2, true); //MAKE SEP CONSTRUC
-    Organism child = new Organism(width/2, height/2, false);
+    float child_stiffness = (stiffness + partner.stiffness)/2;
+    int chanceToIncreaseStiff = round(random(100));
+    if(chanceToIncreaseStiff < 20){
+      child_stiffness += stiffIncrease;
+    }
+    
+    
+    Organism child = new Organism(random(width), height/2, child_stiffness); //MAKE SEP CONSTRUC
+    
+    //Organism child = new Organism(width/2, height/2, false);
     int lengthChance = round(random(1));
     if(lengthChance == 0){
       int meanSize = (cells.size() + partner.cells.size())/2;
@@ -197,6 +226,8 @@ class Organism{
       }
       
     }
+    
+    
     return child;
   }
   
@@ -207,7 +238,7 @@ class Organism{
   void calcScore(){
     calcSeperation();
     calcDisplacement();
-    score = displacement - seperation*500 + cells.size()*100;
+    score = displacement - seperation*100 + cells.size()*50;
   }
   
   void calcDisplacement(){    
@@ -243,6 +274,10 @@ class Organism{
     for(int i = 0; i < n; i++){
       extend();
     }
+  }
+  
+  void setStiffness(float stiff){
+     stiffness = stiff;
   }
   
   /*int getComponentCount(){

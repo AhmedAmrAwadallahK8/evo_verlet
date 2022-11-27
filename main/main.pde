@@ -10,8 +10,8 @@ void setup(){
 }
  
 void draw(){
-  //fill(0, 140); //200,140
-  //rect(-2,-2,width+2,height+2);
+  fill(0, 150); //200,140
+  rect(-2,-2,width+2,height+2);
   sim.run();
 }
  

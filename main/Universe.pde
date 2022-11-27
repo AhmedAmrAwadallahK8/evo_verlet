@@ -94,8 +94,8 @@ class Universe{
   
   void addRandOrganism(){
     float y = height/2;
-    //float x = random(width);
-    float x = width/2;
+    float x = random(width);
+    //float x = width/2;
     organisms.add(new Organism(x, y));
   }
 
